@@ -1,10 +1,15 @@
-# EntryLevel
+# 只放文件路径，没有 PUBLIC、PRIVATE 关键字
+find_package(glad REQUIRED)
+find_package(glfw3 REQUIRED)
+
 set(HEADER_FILES
-    inc/xxx.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inc/OpenGLExampleBase.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inc/HelloWindow.h
 )
 
 set(SOURCE_FILES
-    src/xxx.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/OpenGLExampleBase.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/HelloWindow.cpp
 )
 
 add_library(EntryLevel)
@@ -19,4 +24,10 @@ target_sources(EntryLevel
 target_include_directories(EntryLevel
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/inc
+)
+
+target_link_libraries(EntryLevel
+    PUBLIC  
+        glad::glad 
+        glfw
 )
