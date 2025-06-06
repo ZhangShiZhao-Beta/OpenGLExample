@@ -12,7 +12,7 @@
         "generator": "Visual Studio 17 2022",
         "binaryDir": "${sourceDir}/build/vs2022-debug",
         "cacheVariables": {
-          "CMAKE_TOOLCHAIN_FILE": "D:/Program Files/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "VCPKG_TARGET_TRIPLET": "x64-windows",
           "CMAKE_BUILD_TYPE": "Debug"
         }
@@ -23,7 +23,7 @@
         "generator": "Visual Studio 17 2022",
         "binaryDir": "${sourceDir}/build/vs2022-release",
         "cacheVariables": {
-          "CMAKE_TOOLCHAIN_FILE": "D:/Program Files/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "VCPKG_TARGET_TRIPLET": "x64-windows",
           "CMAKE_BUILD_TYPE": "Release"
         }
@@ -31,11 +31,11 @@
     ],
     "buildPresets": [
       {
-        "name": "build-debug",
+        "name": "build-vs2022-debug",
         "configurePreset": "vs2022-debug"
       },
       {
-        "name": "build-release",
+        "name": "build-vs2022-release",
         "configurePreset": "vs2022-release"
       }
     ]
