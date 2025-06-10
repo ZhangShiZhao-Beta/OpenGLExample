@@ -6,6 +6,6 @@
 
 int main()
 {
-    auto pOpenGLExp = std::make_unique<OpenGLHelloTriangle>();
+    auto pOpenGLExp = std::make_unique<OpenGLHelloWindow>();
     return pOpenGLExp->main();
 }
