@@ -2,9 +2,10 @@
 #include <iostream>
 
 #include "HelloWindow.h"
+#include "HelloTriangle.h"
 
 int main()
 {
-    std::unique_ptr<OpenGLHelloWindow> pOpenGLExp = std::make_unique<OpenGLHelloWindow>();
+    auto pOpenGLExp = std::make_unique<OpenGLHelloTriangle>();
     return pOpenGLExp->main();
 }

@@ -7,7 +7,7 @@ class OpenGLHelloWindow : public OpenGLExampleBase
 public:
 	int main() override;
 
-private:
+protected:
 	static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 	static void processInput(GLFWwindow* window);
 };

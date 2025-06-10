@@ -5,11 +5,13 @@ find_package(glfw3 REQUIRED)
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/inc/OpenGLExampleBase.h
     ${CMAKE_CURRENT_SOURCE_DIR}/inc/HelloWindow.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inc/HelloTriangle.h
 )
 
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/OpenGLExampleBase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/HelloWindow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/HelloTriangle.cpp
 )
 
 add_library(EntryLevel)
