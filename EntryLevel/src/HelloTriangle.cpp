@@ -7,7 +7,6 @@
 
 namespace
 {
-
 	const unsigned int SCR_WIDTH = 800;
 	const unsigned int SCR_HEIGHT = 600;
 
@@ -25,40 +24,54 @@ namespace
 		"}\n\0";
 };
 
-int OpenGLHelloTriangle::main()
+enum class ShaderType
 {
-	// glfw: initialize and configure
-	// ------------------------------
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	VERTEX,
+	FRAGMENT,
+	PROGRAM
+};
 
-#ifdef __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
-	// glfw window creation
-	// --------------------
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-	if (window == NULL)
+bool checkShader(const unsigned int shader, const ShaderType& shaderType)
+{
+	int success;
+	char infoLog[512];
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+	if (success)
 	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-
-	// glad: load all OpenGL function pointers
-	// ---------------------------------------
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
+		return true;
 	}
 
+	glGetShaderInfoLog(shader, 512, NULL, infoLog);
+	std::string errorInfo;
+	switch (shaderType)
+	{
+	case ShaderType::VERTEX:
+	{
+		errorInfo = "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n";
+		break;
+	}
+	case ShaderType::FRAGMENT:
+	{
+		errorInfo = "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n";
+		break;
+	}
+	case ShaderType::PROGRAM:
+	{
+		errorInfo = "ERROR::SHADER::PROGRAM::LINKING_FAILED\n";
+		break;
+	}
+	default:
+	{
+		return true;
+	}
+	}
+	std::cout << errorInfo << infoLog << std::endl;
 
+	return false;
+}
+
+bool getShaderProgram(unsigned int& shaderProgram)
+{
 	// build and compile our shader program
 	// ------------------------------------
 	// vertex shader
@@ -66,38 +79,45 @@ int OpenGLHelloTriangle::main()
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
 	// check for shader compile errors
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
+	if (!checkShader(vertexShader, ShaderType::VERTEX))
 	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		return false;
 	}
+
 	// fragment shader
 	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
 	// check for shader compile errors
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
+	if (!checkShader(fragmentShader, ShaderType::FRAGMENT))
 	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+		return false;
 	}
+
 	// link shaders
-	unsigned int shaderProgram = glCreateProgram();
+	shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
 	// check for linking errors
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+	if (!checkShader(fragmentShader, ShaderType::PROGRAM))
+	{
+		return false;
 	}
+
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	
+	return true;
+}
+
+void OpenGLHelloTriangle::renderLoop(GLFWwindow* window)
+{
+	unsigned int shaderProgram;
+	if (!getShaderProgram(shaderProgram))
+	{
+		return;
+	}
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -130,8 +150,6 @@ int OpenGLHelloTriangle::main()
 	// uncomment this call to draw in wireframe polygons.
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	// render loop
-	// -----------
 	while (!glfwWindowShouldClose(window))
 	{
 		// input
@@ -156,13 +174,8 @@ int OpenGLHelloTriangle::main()
 	}
 
 	// optional: de-allocate all resources once they've outlived their purpose:
-	// ------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteProgram(shaderProgram);
-
-	// glfw: terminate, clearing all previously allocated GLFW resources.
-	// ------------------------------------------------------------------
-	glfwTerminate();
-	return 0;
 }
